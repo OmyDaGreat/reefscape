@@ -25,8 +25,8 @@ import org.littletonrobotics.junction.networktables.*;
 public class RobotContainer {
   private final Map<Button, JoystickButton> buttons = new EnumMap<>(Button.class);
 
-  public final LoggedDashboardChooser<Command> networkChooser =
-      new LoggedDashboardChooser<>("AutoChooser");
+//  public final LoggedDashboardChooser<Command> networkChooser =
+//      new LoggedDashboardChooser<>("AutoChooser");
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -40,14 +40,14 @@ public class RobotContainer {
     configureBindings();
 
     Register.commands(
-        cmd("scoreLeft", score(LEFT)),
-        cmd("scoreRight", score(RIGHT)),
+//        cmd("scoreLeft", score(LEFT)),
+//        cmd("scoreRight", score(RIGHT)),
         cmd("SetL1", setElevatorState(L1)),
         cmd("SetL2", setElevatorState(L2)),
         cmd("SetL3", setElevatorState(L3)),
         cmd("SetL4", setElevatorState(L4)));
 
-    networkChooser.addDefaultOption("Straight Auto", new PathPlannerAuto("Straight Auto"));
+//    networkChooser.addDefaultOption("Straight Auto", new PathPlannerAuto("Straight Auto"));
   }
 
   /**
@@ -59,14 +59,14 @@ public class RobotContainer {
   private void configureBindings() {
     Register.bindings(
         buttons,
-        bind(START, resetPidgey()),
-        bind(Y, setTelePid()),
-        bind(A, align(CENTER)),
-        // bind(A, setElevatorState(L1)),
-        // bind(B, setElevatorState(L2)),
-        // bind(X, setElevatorState(L3)),
-        // bind(Y, setElevatorState(L4)),
-        bind(LEFT_BUMPER, score(LEFT)),
-        bind(RIGHT_BUMPER, score(RIGHT)));
+//        bind(START, resetPidgey()),
+//        bind(Y, setTelePid()),
+//        bind(A, align(CENTER)),
+         bind(A, setElevatorState(L1)),
+         bind(B, setElevatorState(L2)),
+         bind(X, setElevatorState(L3)),
+         bind(Y, setElevatorState(L4)));
+//        bind(LEFT_BUMPER, score(LEFT)),
+//        bind(RIGHT_BUMPER, score(RIGHT)));
   }
 }

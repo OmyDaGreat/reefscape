@@ -7,10 +7,10 @@ import edu.wpi.first.wpilibj.XboxController
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.InstantCommand
 import edu.wpi.first.wpilibj2.command.WaitCommand
-import frc.robot.commands.sequencing.AutomaticScore
-import frc.robot.subsystems.CoralManipulator
+//import frc.robot.commands.sequencing.AutomaticScore
+//import frc.robot.subsystems.CoralManipulator
 import frc.robot.subsystems.Elevator
-import frc.robot.subsystems.Swerve
+//import frc.robot.subsystems.Swerve
 import frc.robot.utils.Direction
 import frc.robot.utils.ElevatorState
 import frc.robot.utils.ElevatorState.L4
@@ -55,16 +55,16 @@ object Kommand {
      *
      * @return An [InstantCommand] that starts the coral manipulator motors.
      */
-    @JvmStatic
-    fun startCoralManipulator() = cmd { CoralManipulator.getInstance().setHasPiece(false) }
+//    @JvmStatic
+//    fun startCoralManipulator() = cmd { CoralManipulator.getInstance().setHasPiece(false) }
 
     /**
      * Creates an [InstantCommand] to stop the coral manipulator motors.
      *
      * @return An [InstantCommand] that stops the coral manipulator motors.
      */
-    @JvmStatic
-    fun stopCoralManipulator() = cmd { CoralManipulator.getInstance().stopMotors() }
+//    @JvmStatic
+//    fun stopCoralManipulator() = cmd { CoralManipulator.getInstance().stopMotors() }
 
     /**
      * Creates an [AutomaticScore] command to score in a specified direction.
@@ -73,12 +73,12 @@ object Kommand {
      * @param state The desired state of the elevator. Defaults to [L4].
      * @return An [AutomaticScore] that performs the scoring action.
      */
-    @JvmStatic
-    @JvmOverloads
-    fun score(
-        dir: Direction,
-        state: ElevatorState = L4,
-    ) = AutomaticScore(dir, state)
+//    @JvmStatic
+//    @JvmOverloads
+//    fun score(
+//        dir: Direction,
+//        state: ElevatorState = L4,
+//    ) = AutomaticScore(dir, state)
 
     /**
      * Creates an [AlignSwerve] command to align the robot in a specified direction.
@@ -86,8 +86,8 @@ object Kommand {
      * @param dir The direction in which to align the robot.
      * @return An [AlignSwerve] command that aligns the robot.
      */
-    @JvmStatic
-    fun align(dir: Direction) = AlignSwerve(dir)
+//    @JvmStatic
+//    fun align(dir: Direction) = AlignSwerve(dir)
 
     /**
      * Creates a [PadDrive] command to control the robot's driving mechanism.
@@ -95,31 +95,31 @@ object Kommand {
      * @param controller The gaming controller used to drive the robot.
      * @return A [PadDrive] command to control the robot's driving mechanism.
      */
-    @JvmStatic
-    fun drive(controller: XboxController) = PadDrive(controller)
+//    @JvmStatic
+//    fun drive(controller: XboxController) = PadDrive(controller)
 
     /**
      * Creates an [InstantCommand] to reset the Pidgey sensor.
      *
      * @return An [InstantCommand] that resets the Pidgey sensor.
      */
-    @JvmStatic
-    fun resetPidgey() = cmd { Swerve.getInstance().resetPidgey() }
+//    @JvmStatic
+//    fun resetPidgey() = cmd { Swerve.getInstance().resetPidgey() }
 
     /**
      * Creates an [InstantCommand] to set the teleoperation PID.
      *
      * @return An [InstantCommand] that sets the teleoperation PID.
      */
-    @JvmStatic
-    fun setTelePid() = cmd { Swerve.getInstance().setTelePID() }
+//    @JvmStatic
+//    fun setTelePid() = cmd { Swerve.getInstance().setTelePID() }
 
     /**
      * Creates a [PathPlannerAuto] command for autonomous operation.
      *
      * @return A [PathPlannerAuto] command for autonomous operation.
      */
-    @JvmStatic
+//    @JvmStatic
     fun autonomousCommand() = PathPlannerAuto(SwerveParameters.PATHPLANNER_AUTO_NAME)
 
     /**
@@ -138,15 +138,15 @@ object Kommand {
      * @param endVelocity The end velocity for the pathfinding. Defaults to 0.0.
      * @return A command that performs the pathfinding operation.
      */
-    @JvmStatic
-    @JvmOverloads
-    fun createPathfindingCmd(
-        targetPose: Pose2d,
-        endVelocity: Double = 0.0,
-    ): Command =
-        AutoBuilder.pathfindToPose(
-            targetPose,
-            PATH_CONSTRAINTS,
-            endVelocity, // Goal end velocity in meters/sec
-        )
+//    @JvmStatic
+//    @JvmOverloads
+//    fun createPathfindingCmd(
+//        targetPose: Pose2d,
+//        endVelocity: Double = 0.0,
+//    ): Command =
+//        AutoBuilder.pathfindToPose(
+//            targetPose,
+//            PATH_CONSTRAINTS,
+//            endVelocity, // Goal end velocity in meters/sec
+//        )
 }
