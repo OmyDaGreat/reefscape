@@ -10,6 +10,7 @@ import com.pathplanner.lib.commands.PathPlannerAuto;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.*;
+import frc.robot.commands.PadElevator;
 import frc.robot.subsystems.*;
 import frc.robot.utils.*;
 import java.util.EnumMap;
@@ -35,7 +36,7 @@ public class RobotContainer {
     Button.getEntries()
         .forEach(button -> buttons.put(button, new JoystickButton(pad, button.getButtonNumber())));
 
-//    Swerve.getInstance().setDefaultCommand(drive(pad));
+    Elevator.getInstance().setDefaultCommand(new PadElevator(pad));
 
     configureBindings();
 

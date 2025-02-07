@@ -1,21 +1,15 @@
 package frc.robot.commands
 
-import com.pathplanner.lib.auto.AutoBuilder
 import com.pathplanner.lib.commands.PathPlannerAuto
-import edu.wpi.first.math.geometry.Pose2d
-import edu.wpi.first.wpilibj.XboxController
-import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.InstantCommand
 import edu.wpi.first.wpilibj2.command.WaitCommand
 //import frc.robot.commands.sequencing.AutomaticScore
 //import frc.robot.subsystems.CoralManipulator
 import frc.robot.subsystems.Elevator
 //import frc.robot.subsystems.Swerve
-import frc.robot.utils.Direction
 import frc.robot.utils.ElevatorState
 import frc.robot.utils.ElevatorState.L4
 import frc.robot.utils.RobotParameters.SwerveParameters
-import frc.robot.utils.RobotParameters.SwerveParameters.PIDParameters.PATH_CONSTRAINTS
 
 /**
  * The [Kommand] object provides factory methods to create various commands
@@ -90,10 +84,10 @@ object Kommand {
 //    fun align(dir: Direction) = AlignSwerve(dir)
 
     /**
-     * Creates a [PadDrive] command to control the robot's driving mechanism.
+     * Creates a [PadElevator] command to control the robot's driving mechanism.
      *
      * @param controller The gaming controller used to drive the robot.
-     * @return A [PadDrive] command to control the robot's driving mechanism.
+     * @return A [PadElevator] command to control the robot's driving mechanism.
      */
 //    @JvmStatic
 //    fun drive(controller: XboxController) = PadDrive(controller)
