@@ -286,8 +286,8 @@ public class Elevator extends SubsystemBase {
     final double deadband = 0.001;
     if (Math.abs(velocity) >= deadband) {
       // TODO THESE MAY BE NEGATIVE DO NOT MURDER THE MOTORS SOFTWARE PLS!!!!!!!!!!!!!!!!!!!!!!!
-      elevatorMotorLeft.set(velocity);
-      elevatorMotorRight.set(-velocity);
+      elevatorMotorLeft.set(-velocity);
+      elevatorMotorRight.set(velocity);
     } else {
       stopMotors();
     }
