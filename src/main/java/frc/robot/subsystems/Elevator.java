@@ -31,7 +31,7 @@ public class Elevator extends SubsystemBase {
   private final SoftwareLimitSwitchConfigs rightSoftLimitConfig;
 
   private final VoltageOut voltageOut;
-  private final PositionTorqueCurrentFOC posRequest;
+  // private final PositionTorqueCurrentFOC posRequest;
 
   private ElevatorState currentState = frc.robot.utils.ElevatorState.L1;
 
