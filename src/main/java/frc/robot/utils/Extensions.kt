@@ -1,9 +1,9 @@
 package frc.robot.utils
 
 import edu.wpi.first.math.geometry.Pose2d
-import frc.robot.subsystems.PhotonModule
-import org.photonvision.EstimatedRobotPose
-import org.photonvision.targeting.PhotonPipelineResult
+// import frc.robot.subsystems.PhotonModule
+// import org.photonvision.EstimatedRobotPose
+// import org.photonvision.targeting.PhotonPipelineResult
 import java.util.Optional
 
 /**
@@ -17,14 +17,14 @@ import java.util.Optional
  * @receiver List<PhotonModule> The list of PhotonModule objects to search through.
  * @return List<Pair<PhotonModule, PhotonPipelineResult>> The list of PhotonModule and PhotonPipelineResult pairs ordered by pose ambiguity.
  */
-fun List<PhotonModule>.getDecentResultPairs(): List<Pair<PhotonModule, PhotonPipelineResult>> =
-    this
-        .mapNotNull { module ->
-            module.allUnreadResults
-                .getOrNull(0)
-                ?.takeIf { it.hasTargets() && it.bestTarget.poseAmbiguity < 0.2 }
-                ?.let { module to it }
-        }.sortedBy { it.second.bestTarget.poseAmbiguity }
+// fun List<PhotonModule>.getDecentResultPairs(): List<Pair<PhotonModule, PhotonPipelineResult>> =
+//     this
+//         .mapNotNull { module ->
+//             module.allUnreadResults
+//                 .getOrNull(0)
+//                 ?.takeIf { it.hasTargets() && it.bestTarget.poseAmbiguity < 0.2 }
+//                 ?.let { module to it }
+//         }.sortedBy { it.second.bestTarget.poseAmbiguity }
 
 /**
  * Extension function for a list of Pair<PhotonModule, PhotonPipelineResult> objects to check if any have targets.
@@ -34,7 +34,7 @@ fun List<PhotonModule>.getDecentResultPairs(): List<Pair<PhotonModule, PhotonPip
  * @receiver List<Pair<PhotonModule, PhotonPipelineResult>> The list of pairs to check.
  * @return Boolean True if any pair has targets, false otherwise.
  */
-fun List<Pair<PhotonModule, PhotonPipelineResult>>.hasTargets(): Boolean = this.any { it.second.hasTargets() }
+// fun List<Pair<PhotonModule, PhotonPipelineResult>>.hasTargets(): Boolean = this.any { it.second.hasTargets() }
 
 /**
  * Extension function for a list of Pair<PhotonModule, PhotonPipelineResult> objects to check if any have multi-tag results.
@@ -44,7 +44,7 @@ fun List<Pair<PhotonModule, PhotonPipelineResult>>.hasTargets(): Boolean = this.
  * @receiver List<Pair<PhotonModule, PhotonPipelineResult>> The list of pairs to check.
  * @return Boolean True if any pair has multi-tag results, false otherwise.
  */
-fun List<Pair<PhotonModule, PhotonPipelineResult>>.hasMultiTag(): Boolean = this.any { it.second.multiTagResult.isPresent }
+// fun List<Pair<PhotonModule, PhotonPipelineResult>>.hasMultiTag(): Boolean = this.any { it.second.multiTagResult.isPresent }
 
 /**
  * Extension function for a Pair of PhotonModule and PhotonPipelineResult to get estimated poses.
@@ -56,12 +56,12 @@ fun List<Pair<PhotonModule, PhotonPipelineResult>>.hasMultiTag(): Boolean = this
  * @param prevEstimatedRobotPose Pose2d? The previous estimated robot pose to set as reference.
  * @return List<EstimatedRobotPose> The list of estimated robot poses.
  */
-fun Pair<PhotonModule, PhotonPipelineResult>.getEstimatedPose(prevEstimatedRobotPose: Pose2d?): EstimatedRobotPose? {
-    first.poseEstimator.apply {
-        setReferencePose(prevEstimatedRobotPose)
-        return update(second).orElse(null)
-    }
-}
+// fun Pair<PhotonModule, PhotonPipelineResult>.getEstimatedPose(prevEstimatedRobotPose: Pose2d?): EstimatedRobotPose? {
+//     first.poseEstimator.apply {
+//         setReferencePose(prevEstimatedRobotPose)
+//         return update(second).orElse(null)
+//     }
+// }
 
 /**
  * Extension function for a Pair of PhotonModule and PhotonPipelineResult to update the standard deviations of the estimated robot pose.
@@ -72,5 +72,5 @@ fun Pair<PhotonModule, PhotonPipelineResult>.getEstimatedPose(prevEstimatedRobot
  * @receiver Pair<PhotonModule, PhotonPipelineResult> The pair of PhotonModule and PhotonPipelineResult.
  * @param estimatedRobotPose Optional<EstimatedRobotPose> The estimated robot pose to use for updating the standard deviations.
  */
-fun Pair<PhotonModule, PhotonPipelineResult>.updateStdDev(estimatedRobotPose: Optional<EstimatedRobotPose>) =
-    first.updateEstimatedStdDevs(estimatedRobotPose, second.getTargets())
+// fun Pair<PhotonModule, PhotonPipelineResult>.updateStdDev(estimatedRobotPose: Optional<EstimatedRobotPose>) =
+//     first.updateEstimatedStdDevs(estimatedRobotPose, second.getTargets())
