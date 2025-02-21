@@ -3,6 +3,7 @@ package frc.robot.utils
 import com.ctre.phoenix6.signals.InvertedValue
 import com.pathplanner.lib.config.RobotConfig
 import com.pathplanner.lib.path.PathConstraints
+import edu.wpi.first.apriltag.AprilTagFields
 import edu.wpi.first.math.Matrix
 import edu.wpi.first.math.VecBuilder
 import edu.wpi.first.math.geometry.Pose2d
@@ -21,9 +22,11 @@ import edu.wpi.first.wpilibj.DriverStation
 import frc.robot.utils.emu.AlgaePivotState
 import frc.robot.utils.emu.CoralState
 import frc.robot.utils.emu.ElevatorState
+import frc.robot.utils.pingu.CoralScore
 import frc.robot.utils.pingu.LogPingu.metaLogs
-import edu.wpi.first.apriltag.*
-import frc.robot.utils.pingu.*
+import frc.robot.utils.pingu.MagicPingu
+import frc.robot.utils.pingu.PathPingu
+import frc.robot.utils.pingu.Pingu
 import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
@@ -97,8 +100,8 @@ object RobotParameters {
             @JvmField
             val DIST_PINGU = Pingu(0.2, 0.0, 0.0)
 
-            @JvmField
             // TODO remember to update path planner config values and measure everything (cameras etc)
+            @JvmField
             val PATH_CONSTRAINTS: PathConstraints =
                 PathConstraints(
                     5.0,
@@ -163,7 +166,7 @@ object RobotParameters {
 
         // make this a supplier
         @JvmField
-        var ROBOT_POS: Pose2d = Pose2d(0.0, 0.0, Rotation2d(0.0, 0.0))
+        var robotPos: Pose2d = Pose2d(0.0, 0.0, Rotation2d(0.0, 0.0))
 
         @JvmField
         var lowBattery: Boolean = false
@@ -282,29 +285,42 @@ object RobotParameters {
             val REEF_K = Pose2d(3.972, 5.247, fromDegrees(-60.0))
             val REEF_L = Pose2d(3.693, 5.079, fromDegrees(-60.0))
 
-            val SCORING_A_BLUE = Pose2d(REEF_A.x - (DIS * cos(REEF_A.rotation.radians)), REEF_A.y - (DIS * sin(REEF_A.rotation.radians)), REEF_A.rotation)
-            val SCORING_B_BLUE = Pose2d(REEF_B.x - (DIS * cos(REEF_B.rotation.radians)), REEF_B.y - (DIS * sin(REEF_B.rotation.radians)), REEF_B.rotation)
-            val SCORING_C_BLUE = Pose2d(REEF_C.x - (DIS * cos(REEF_C.rotation.radians)), REEF_C.y - (DIS * sin(REEF_C.rotation.radians)), REEF_C.rotation)
-            val SCORING_D_BLUE = Pose2d(REEF_D.x - (DIS * cos(REEF_D.rotation.radians)), REEF_D.y - (DIS * sin(REEF_D.rotation.radians)), REEF_D.rotation)
-            val SCORING_E_BLUE = Pose2d(REEF_E.x - (DIS * cos(REEF_E.rotation.radians)), REEF_E.y - (DIS * sin(REEF_E.rotation.radians)), REEF_E.rotation)
-            val SCORING_F_BLUE = Pose2d(REEF_F.x - (DIS * cos(REEF_F.rotation.radians)), REEF_F.y - (DIS * sin(REEF_F.rotation.radians)), REEF_F.rotation)
-            val SCORING_G_BLUE = Pose2d(REEF_G.x - (DIS * cos(REEF_G.rotation.radians)), REEF_G.y - (DIS * sin(REEF_G.rotation.radians)), REEF_G.rotation)
-            val SCORING_H_BLUE = Pose2d(REEF_H.x - (DIS * cos(REEF_H.rotation.radians)), REEF_H.y - (DIS * sin(REEF_H.rotation.radians)), REEF_H.rotation)
-            val SCORING_I_BLUE = Pose2d(REEF_I.x - (DIS * cos(REEF_I.rotation.radians)), REEF_I.y - (DIS * sin(REEF_I.rotation.radians)), REEF_I.rotation)
-            val SCORING_J_BLUE = Pose2d(REEF_J.x - (DIS * cos(REEF_J.rotation.radians)), REEF_J.y - (DIS * sin(REEF_J.rotation.radians)), REEF_J.rotation)
-            val SCORING_K_BLUE = Pose2d(REEF_K.x - (DIS * cos(REEF_K.rotation.radians)), REEF_K.y - (DIS * sin(REEF_K.rotation.radians)), REEF_K.rotation)
-            val SCORING_L_BLUE = Pose2d(REEF_L.x - (DIS * cos(REEF_L.rotation.radians)), REEF_L.y - (DIS * sin(REEF_L.rotation.radians)), REEF_L.rotation)
+            val SCORING_A_BLUE =
+                Pose2d(REEF_A.x - (DIS * cos(REEF_A.rotation.radians)), REEF_A.y - (DIS * sin(REEF_A.rotation.radians)), REEF_A.rotation)
+            val SCORING_B_BLUE =
+                Pose2d(REEF_B.x - (DIS * cos(REEF_B.rotation.radians)), REEF_B.y - (DIS * sin(REEF_B.rotation.radians)), REEF_B.rotation)
+            val SCORING_C_BLUE =
+                Pose2d(REEF_C.x - (DIS * cos(REEF_C.rotation.radians)), REEF_C.y - (DIS * sin(REEF_C.rotation.radians)), REEF_C.rotation)
+            val SCORING_D_BLUE =
+                Pose2d(REEF_D.x - (DIS * cos(REEF_D.rotation.radians)), REEF_D.y - (DIS * sin(REEF_D.rotation.radians)), REEF_D.rotation)
+            val SCORING_E_BLUE =
+                Pose2d(REEF_E.x - (DIS * cos(REEF_E.rotation.radians)), REEF_E.y - (DIS * sin(REEF_E.rotation.radians)), REEF_E.rotation)
+            val SCORING_F_BLUE =
+                Pose2d(REEF_F.x - (DIS * cos(REEF_F.rotation.radians)), REEF_F.y - (DIS * sin(REEF_F.rotation.radians)), REEF_F.rotation)
+            val SCORING_G_BLUE =
+                Pose2d(REEF_G.x - (DIS * cos(REEF_G.rotation.radians)), REEF_G.y - (DIS * sin(REEF_G.rotation.radians)), REEF_G.rotation)
+            val SCORING_H_BLUE =
+                Pose2d(REEF_H.x - (DIS * cos(REEF_H.rotation.radians)), REEF_H.y - (DIS * sin(REEF_H.rotation.radians)), REEF_H.rotation)
+            val SCORING_I_BLUE =
+                Pose2d(REEF_I.x - (DIS * cos(REEF_I.rotation.radians)), REEF_I.y - (DIS * sin(REEF_I.rotation.radians)), REEF_I.rotation)
+            val SCORING_J_BLUE =
+                Pose2d(REEF_J.x - (DIS * cos(REEF_J.rotation.radians)), REEF_J.y - (DIS * sin(REEF_J.rotation.radians)), REEF_J.rotation)
+            val SCORING_K_BLUE =
+                Pose2d(REEF_K.x - (DIS * cos(REEF_K.rotation.radians)), REEF_K.y - (DIS * sin(REEF_K.rotation.radians)), REEF_K.rotation)
+            val SCORING_L_BLUE =
+                Pose2d(REEF_L.x - (DIS * cos(REEF_L.rotation.radians)), REEF_L.y - (DIS * sin(REEF_L.rotation.radians)), REEF_L.rotation)
 
             // Tag order is 18, 19, 20, 21, 22, 17
             @JvmField
-            val coralScoreBlueList: List<CoralScore> = listOf(
-                Triple(Translation2d(3.6576, 4.0259), SCORING_A_BLUE, SCORING_B_BLUE),
-                Triple(Translation2d(4.0739, 3.3063), SCORING_C_BLUE, SCORING_D_BLUE),
-                Triple(Translation2d(4.9047, 3.3063), SCORING_E_BLUE, SCORING_F_BLUE),
-                Triple(Translation2d(5.321046, 4.0259), SCORING_G_BLUE, SCORING_H_BLUE),
-                Triple(Translation2d(4.90474, 4.7455), SCORING_I_BLUE, SCORING_J_BLUE),
-                Triple(Translation2d(4.0739, 4.7455), SCORING_K_BLUE, SCORING_L_BLUE)
-            )
+            val coralScoreBlueList: List<CoralScore> =
+                listOf(
+                    Triple(Translation2d(3.6576, 4.0259), SCORING_A_BLUE, SCORING_B_BLUE),
+                    Triple(Translation2d(4.0739, 3.3063), SCORING_C_BLUE, SCORING_D_BLUE),
+                    Triple(Translation2d(4.9047, 3.3063), SCORING_E_BLUE, SCORING_F_BLUE),
+                    Triple(Translation2d(5.321046, 4.0259), SCORING_G_BLUE, SCORING_H_BLUE),
+                    Triple(Translation2d(4.90474, 4.7455), SCORING_I_BLUE, SCORING_J_BLUE),
+                    Triple(Translation2d(4.0739, 4.7455), SCORING_K_BLUE, SCORING_L_BLUE),
+                )
 
             @JvmStatic
             fun addCoralPosList() {
@@ -316,10 +332,13 @@ object RobotParameters {
             // List of Source positions
             @JvmField
             val LEFT_CORAL_STATION_FAR: Pose2d = Pose2d(1.64, 7.33, fromDegrees(-54.5))
+
             @JvmField
             val LEFT_CORAL_STATION_NEAR: Pose2d = Pose2d(0.71, 6.68, fromDegrees(-54.5))
+
             @JvmField
             val RIGHT_CORAL_STATION_FAR: Pose2d = Pose2d(1.61, 0.70, fromDegrees(55.0))
+
             @JvmField
             val RIGHT_CORAL_STATION_NEAR: Pose2d = Pose2d(0.64, 1.37, fromDegrees(55.0))
         }

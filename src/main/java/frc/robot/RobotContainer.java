@@ -1,9 +1,11 @@
 package frc.robot;
 
 import static frc.robot.commands.Kommand.*;
+import static frc.robot.utils.RobotParameters.ElevatorParameters.*;
 import static frc.robot.utils.emu.Button.*;
 import static frc.robot.utils.emu.Direction.*;
 import static frc.robot.utils.emu.ElevatorState.*;
+import static frc.robot.utils.pingu.BindPingu.*;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
@@ -11,15 +13,13 @@ import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.*;
+import frc.robot.commands.*;
 import frc.robot.commands.sequencing.ScoreL1;
 import frc.robot.commands.sequencing.ScoreL2;
 import frc.robot.commands.sequencing.ScoreL3;
 import frc.robot.commands.sequencing.ScoreL4;
 import frc.robot.subsystems.*;
-import frc.robot.utils.emu.*;
 import frc.robot.utils.pingu.*;
-import java.util.EnumMap;
-import java.util.Map;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -28,9 +28,6 @@ import java.util.Map;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
-  private final Map<Button, JoystickButton> aacrnButtons = new EnumMap<>(Button.class);
-  private final Map<Button, JoystickButton> calamityCowButtons = new EnumMap<>(Button.class);
-
   public final SendableChooser<Command> networkChooser;
   public final XboxController aacrn;
   public final XboxController calamityCow;
@@ -44,31 +41,19 @@ public class RobotContainer {
     Coral.getInstance();
     Swerve.getInstance().setDefaultCommand(drive(aacrn));
     Algae.getInstance();
-    Button.getEntries()
-        .forEach(
-            button ->
-                aacrnButtons.put(button, new JoystickButton(aacrn, button.getButtonNumber())));
-
-    Button.getEntries()
-        .forEach(
-            button ->
-                calamityCowButtons.put(
-                    button, new JoystickButton(calamityCow, button.getButtonNumber())));
-
 
     NamedCommands.registerCommand("ScoreL1", new ScoreL1());
     NamedCommands.registerCommand("ScoreL2", new ScoreL2());
     NamedCommands.registerCommand("ScoreL3", new ScoreL3());
-    NamedCommands.registerCommand("ScoreL4", new ScoreL4() );
-
+    NamedCommands.registerCommand("ScoreL4", new ScoreL4());
 
     networkChooser = AutoBuilder.buildAutoChooser();
 
     configureBindings();
 
     new CommandPingu()
-        .bind("scoreLeft", score(LEFT))
-        .bind("scoreRight", score(RIGHT))
+        .bind("scoreLeft", score(LEFT, elevatorToBeSetState, Swerve.getInstance().getPose()))
+        .bind("scoreRight", score(RIGHT, elevatorToBeSetState, Swerve.getInstance().getPose()))
         .bind("SetL1", setElevatorState(L1))
         .bind("SetL2", setElevatorState(L2))
         .bind("SetL3", setElevatorState(L3))
@@ -85,20 +70,20 @@ public class RobotContainer {
    * CommandPS4Controller} controllers or {@link CommandJoystick}.
    */
   private void configureBindings() {
-            new Bingu(aacrnButtons)
-        .bind(START, resetPidgey())
-//        .bind(B, setElevatorState(DEFAULT))
-//        .bind(B, align(CENTER).onlyWhile(pad::getAButton))
-//        .bind(B, align(LEFT))
-//        .bind(B, createPathfindingCmd(reefs.get(0)))
-//        .bind(A, setIntakeAlgae())
-//        .bind(A, align(RIGHT))
-        .bind(Y, startCoralMotors())
-        .bind(LEFT_BUMPER, score(LEFT))
-        .bind(RIGHT_BUMPER, score(RIGHT))
-        .bind(X, reverseIntake().onlyWhile(aacrn::getXButton));
-
-    new Bingu(calamityCowButtons).bind(A, waitCmd(1));
+    bindings(
+        aacrn,
+        bind(START, Kommand::resetPidgey),
+        //        bind(B, () -> setElevatorState(DEFAULT))
+        //        bind(B, () -> align(CENTER).onlyWhile(pad::getAButton))
+        //        bind(B, () -> align(LEFT))
+        //        bind(B, () -> createPathfindingCmd(reefs.get(0)))
+        //        bind(A, () -> setIntakeAlgae())
+        //        bind(A, () -> align(RIGHT))
+        bind(Y, Kommand::startCoralMotors),
+        bind(LEFT_BUMPER, () -> score(LEFT, elevatorToBeSetState, Swerve.getInstance().getPose())),
+        bind(
+            RIGHT_BUMPER, () -> score(RIGHT, elevatorToBeSetState, Swerve.getInstance().getPose())),
+        bind(X, () -> reverseIntake().onlyWhile(aacrn::getXButton)));
+    bindings(calamityCow, bind(A, () -> waitCmd(1)));
   }
-
 }

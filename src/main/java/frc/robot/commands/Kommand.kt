@@ -15,13 +15,11 @@ import frc.robot.subsystems.Coral
 import frc.robot.subsystems.Elevator
 import frc.robot.subsystems.Swerve
 import frc.robot.utils.RobotParameters.CoralManipulatorParameters.isCoralIntaking
-import frc.robot.utils.RobotParameters.LiveRobotValues.ROBOT_POS
 import frc.robot.utils.RobotParameters.SwerveParameters
 import frc.robot.utils.RobotParameters.SwerveParameters.PinguParameters.PATH_CONSTRAINTS
 import frc.robot.utils.emu.CoralState
 import frc.robot.utils.emu.Direction
 import frc.robot.utils.emu.ElevatorState
-import frc.robot.utils.emu.ElevatorState.L4
 import frc.robot.utils.pingu.PathPingu.findClosestScoringPosition
 import kotlin.math.abs
 
@@ -108,16 +106,19 @@ object Kommand {
      * Creates an [AutomaticScore] command to score in a specified direction.
      *
      * @param dir The direction in which to score.
-     * @param state The desired state of the elevator. Defaults to [L4].
+     * @param state The desired state of the elevator.
+     * @param pos The robot's current position.
      * @return An [AutomaticScore] that performs the scoring action.
      */
     @JvmStatic
-//    fun score(dir: Direction) = AutomaticScore(dir)
-    fun score(dir: Direction) = cmd {}
-
+    fun score(
+        dir: Direction,
+        state: ElevatorState,
+        pos: Pose2d,
+    ) = AutomaticScore(dir, state, pos)
 
     /**
-     * Creates an new [ReverseIntake] command to reverse the intake.
+     * Creates a new [ReverseIntake] command to reverse the intake.
      *
      * @return A [ReverseIntake] command that reverses the intake.
      */
@@ -228,5 +229,8 @@ object Kommand {
      * @return A command that performs the pathfinding operation.
      */
     @JvmStatic
-    fun moveToClosestCoralScore(direction: Direction, pose: Pose2d) = findClosestScoringPosition(pose, direction)
+    fun moveToClosestCoralScore(
+        direction: Direction,
+        pose: Pose2d,
+    ) = findClosestScoringPosition(pose, direction)
 }

@@ -1,16 +1,14 @@
 package frc.robot.commands;
 
+import static frc.robot.commands.Kommand.*;
 import static frc.robot.utils.RobotParameters.ElevatorParameters.*;
 import static frc.robot.utils.RobotParameters.SwerveParameters.Thresholds.*;
+import static frc.robot.utils.emu.Direction.*;
 import static frc.robot.utils.emu.ElevatorState.*;
 
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.commands.sequencing.AutomaticScore;
-import frc.robot.subsystems.Elevator;
-import frc.robot.subsystems.Swerve;
-import frc.robot.utils.RobotParameters;
-import frc.robot.utils.emu.Direction;
+import frc.robot.subsystems.*;
 import kotlin.*;
 
 /** Command to control the robot's swerve drive using a Logitech gaming pad. */
@@ -18,16 +16,10 @@ public class PadElevator extends Command {
   private final XboxController aacrn;
   private final XboxController calamityCow;
 
-  private final Swerve swerve;
-  /**
-   * Constructs a new PadDrive command.
-   *
-   * @param pad The Logitech gaming pad used to control the robot.
-   */
+  /** Constructs a new PadDrive command. */
   public PadElevator(XboxController aacrn, XboxController calamityCow) {
     this.aacrn = aacrn;
     this.calamityCow = calamityCow;
-    this.swerve = Swerve.getInstance();
     addRequirements(Elevator.getInstance());
   }
 
@@ -38,30 +30,6 @@ public class PadElevator extends Command {
    */
   @Override
   public void execute() {
-    // Code to manually move elevator
-    //    Pair<Double, Double> position = positionSet(pad);
-    //    Elevator.getInstance().moveElevator(position.getSecond());
-
-    //    if (checkDPad(0)) {
-    //      setElevatorState(L4).schedule();
-    //    } else if (checkDPad(2)) {
-    //      setElevatorState(ALGAE).schedule();
-    //    } else if (checkDPad(4)) {
-    //      setElevatorState(L2).schedule();
-    //    } else if (checkDPad(6)) {
-    //      setElevatorState(L1).schedule();
-    //    }
-
-
-    if (aacrn.getRightBumperButtonPressed()) {
-      new AutomaticScore(Direction.RIGHT, elevatorToBeSetState, swerve.getPose()).schedule();
-    }
-
-    if (aacrn.getLeftBumperButtonPressed()) {
-      new AutomaticScore(Direction.LEFT, elevatorToBeSetState, swerve.getPose()).schedule();
-    }
-
-
     // THIS IS WHEN WE HAVE TWO CONTROLLERS,
     // JAYDEN WILL CLICK A DPAD AND AUTOSCORE TAKES THIS VARIABLES AND GOES TO THAT HEIGHT
     if (checkDPad(0)) {
