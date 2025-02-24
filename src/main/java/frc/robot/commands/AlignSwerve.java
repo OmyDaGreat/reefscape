@@ -1,14 +1,22 @@
 package frc.robot.commands;
 
-import static frc.robot.utils.RobotParameters.SwerveParameters.*;
+import static frc.robot.utils.ExtensionsKt.hasTargets;
+import static frc.robot.utils.RobotParameters.MotorParameters.MAX_ANGULAR_SPEED;
+import static frc.robot.utils.RobotParameters.MotorParameters.MAX_SPEED;
 import static frc.robot.utils.RobotParameters.SwerveParameters.PinguParameters.*;
+import static frc.robot.utils.RobotParameters.SwerveParameters.Thresholds.X_DEADZONE;
+import static frc.robot.utils.RobotParameters.SwerveParameters.Thresholds.Y_DEADZONE;
+import static frc.robot.utils.pingu.LogPingu.log;
+import static frc.robot.utils.pingu.LogPingu.logs;
 
 import edu.wpi.first.math.controller.*;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj2.command.*;
 import frc.robot.subsystems.*;
+import frc.robot.utils.RobotParameters;
 import frc.robot.utils.emu.*;
-import org.opencv.photo.Photo;
+import kotlin.Pair;
+import org.photonvision.PhotonCamera;
 
 public class AlignSwerve extends Command {
   private double yaw;
@@ -21,6 +29,9 @@ public class AlignSwerve extends Command {
   private Timer timer;
   private double
       offset; // double offset is the left/right offset from the april tag to make it properly align
+  PhotonCamera camera;
+    private XboxController pad;
+
 
   /**
    * Creates a new AlignSwerve using the Direction Enum.
@@ -28,22 +39,29 @@ public class AlignSwerve extends Command {
    * @param offsetSide The side of the robot to offset the alignment to. Can be "left", "right", or
    *     "center".
    */
-  public AlignSwerve(Direction offsetSide) {
+  public AlignSwerve(Direction offsetSide, XboxController pad) {
+
     photonVision = PhotonVision.getInstance();
+    this.pad = pad;
     switch (offsetSide) {
-      case LEFT:
-        this.offset = AUTO_ALIGN_SWERVE_LEFT_OFFSET;
-        break;
       case RIGHT:
-        this.offset = AUTO_ALIGN_SWERVE_RIGHT_OFFSET;
+        camera = photonVision.requestCamera("RightCamera");
+        offset = RobotParameters.PhotonVisionConstants.LEFT_OFFSET;
+        break;
+      case LEFT:
+        camera = photonVision.requestCamera("LeftCamera");
+        offset = RobotParameters.PhotonVisionConstants.RIGHT_OFFSET;
         break;
       case CENTER:
         this.offset = 0;
+        System.out.println("nhujolikhohuikb'ghuibghyuihuo98iao98i0oa0p9ipaoiaoihaiohjahoia");
         break;
       default:
         throw new IllegalStateException("Unexpected value: " + offsetSide);
     }
 
+    timer = new Timer();
+    timer.start();
     addRequirements(Swerve.getInstance());
   }
 
@@ -59,11 +77,11 @@ public class AlignSwerve extends Command {
     rotationalController.setSetpoint(0);
 
     yController = Y_PINGU.getPidController();
-    yController.setTolerance(1.5);
-    yController.setSetpoint(0);
+    yController.setTolerance(1.0);
+    yController.setSetpoint(offset);
 
     disController = DIST_PINGU.getPidController();
-    disController.setTolerance(1.5);
+    disController.setTolerance(1.0);
     disController.setSetpoint(0);
 
     timer = new Timer();
@@ -77,22 +95,58 @@ public class AlignSwerve extends Command {
    */
   @Override
   public void execute() {
-    yaw = photonVision.getYaw();
-
-    y = photonVision.getY() + offset;
-
-    dist = photonVision.getDist();
-
-    Swerve.getInstance()
-        .setDriveSpeeds(
-            disController.calculate(dist),
-            yController.calculate(y),
-            rotationalController.calculate(yaw),
-            false);
-
-    if (photonVision.hasTag()) {
-      timer.reset();
+    if (photonVision.fetchYaw(camera) == 7157) {
+      Timer tempTimer = new Timer();
+      tempTimer.start();
+      if (tempTimer.get() < 0.2) {
+        if (photonVision.fetchYaw(camera) != 7157) {
+          return;
+      }
+      if (camera.getName().equals("RightCamera")) {
+        camera = photonVision.requestCamera("LeftCamera");
+      } else {
+        camera = photonVision.requestCamera("RightCamera");
+      }
+      }
+      return;
     }
+
+    yaw = photonVision.fetchYaw(camera);
+
+    y = photonVision.fetchY(camera);
+
+    dist = photonVision.fetchDist(camera);
+
+    double error = y - offset;
+
+    double padRotation = Math.abs(pad.getRightX()) >= 0.1 ? -pad.getRightX() * MAX_ANGULAR_SPEED : 0.0;
+
+    logs(
+            () -> {
+              log("Alignment/Used camera", camera.getName());
+              log("Alignment/Fetched Yaw", yaw);
+              log("Alignment/Fetched y", y);
+              log("Alignment/Fetched dist(x)", dist);
+              log("Alignment/Fetched error", error);
+              log("Alignment/Caluclated val", yController.calculate(y, offset));
+            });
+
+    if (y != 7157) {
+      Swerve.getInstance()
+              .setDriveSpeeds(positionSet(pad).getFirst(), yController.calculate(y, offset), padRotation);
+    }
+
+  }
+
+  /**
+   * Sets the position based on the input from the Logitech gaming pad.
+   *
+   * @param pad The Logitech gaming pad.
+   * @return The coordinate representing the position. The first element is the x-coordinate, and
+   *     the second element is the y-coordinate.
+   */
+  public static Pair<Double, Double> positionSet(XboxController pad) {
+      return PadDrive.positionSet(pad);
   }
 
   /**
@@ -108,7 +162,12 @@ public class AlignSwerve extends Command {
    */
   @Override
   public boolean isFinished() {
-    return timer.hasElapsed(1.0);
+    if (timer.get() > 2.0)
+    {
+      timer.stop();
+      return  true;
+    }
+    return false;
   }
 
   /**
